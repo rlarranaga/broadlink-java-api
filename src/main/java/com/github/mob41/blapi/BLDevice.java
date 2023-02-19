@@ -110,32 +110,6 @@ public abstract class BLDevice implements Closeable {
 
     public static final short DEV_RM_MINI_3 = 0x27c2;
 
-    public static final short DEV_RM_MINI_4_1 = 0x51da;
-
-    public static final short DEV_RM_MINI_4_2 = 0x520c;
-
-    public static final short DEV_RM_MINI_4_3 = 0x5216;
-
-    public static final short DEV_RM_MINI_4_ = 0x521c;
-
-    public static final short DEV_RM_MINI_4_5 = 0x610c;
-
-    public static final short DEV_RM_MINI_4_6 = 0x62bc;
-
-    public static final short DEV_RM_MINI_4_7 = 0x648d;
-
-    public static final short DEV_RM_MINI_4_8 = 0x653a;
-
-    public static final short DEV_RM_MINI_4C_1 = 0x520d;
-
-    public static final short DEV_RM_MINI_4C_2 = 0x6070;
-
-    public static final short DEV_RM_MINI_4C_3 = 0x610f;
-
-    public static final short DEV_RM_MINI_4C_4 = 0x62be;
-
-    public static final short DEV_RM_MINI_4C_5 = 0x6539;
-
     public static final short DEV_RM_PRO_PHICOMM = 0x273d;
 
     public static final short DEV_RM_2_HOME_PLUS = 0x2783;
@@ -175,34 +149,6 @@ public abstract class BLDevice implements Closeable {
     public static final String DESC_RM_MINI = "RM Mini";
 
     public static final String DESC_RM_MINI_3 = "RM Mini 3";
-
-    public static final String DESC_RM_MINI_4_1 = "RM Mini 4";
-
-    public static final String DESC_RM_MINI_4_2 = "RM Mini 4";
-
-    public static final String DESC_RM_MINI_4_3 = "RM Mini 4";
-
-    public static final String DESC_RM_MINI_4_4 = "RM Mini 4";
-
-    public static final String DESC_RM_MINI_4_5 = "RM Mini 4";
-
-    public static final String DESC_RM_MINI_4_6 = "RM Mini 4";
-
-    public static final String DESC_RM_MINI_4_7 = "RM Mini 4";
-
-    public static final String DESC_RM_MINI_4_8 = "RM Mini 4";
-
-    public static final String DESC_RM_MINI_4C_1 = "RM Mini 4C";
-
-    public static final String DESC_RM_MINI_4C_2 = "RM Mini 4C";
-
-    public static final String DESC_RM_MINI_4C_3 = "RM Mini 4C";
-
-    public static final String DESC_RM_MINI_4C_4 = "RM Mini 4C";
-
-    public static final String DESC_RM_MINI_4C_5 = "RM Mini 4C";
-
-    public static final String DESC_RM_MINI_4C_6 = "RM Mini 4C";
 
     public static final String DESC_RM_PRO_PHICOMM = "RM Pro";
 
@@ -622,20 +568,6 @@ public abstract class BLDevice implements Closeable {
         case DEV_RM_MINI:
         case DEV_RM_MINI_3:
             return new RM2Device(deviceType, desc, host, mac);
-        case DEV_RM_MINI_4_1:
-        case DEV_RM_MINI_4_2:        
-        case DEV_RM_MINI_4_3:                
-        case DEV_RM_MINI_4_4:
-        case DEV_RM_MINI_4_5:
-        case DEV_RM_MINI_4_6:
-        case DEV_RM_MINI_4_7:
-        case DEV_RM_MINI_4_8:
-        case DEV_RM_MINI_4C_1:         
-        case DEV_RM_MINI_4C_2:  
-        case DEV_RM_MINI_4C_3:  
-        case DEV_RM_MINI_4C_4:  
-        case DEV_RM_MINI_4C_5:                                                                 
-            return new RM4Device(deviceType, desc, host, mac);
         case DEV_RM_PRO_PHICOMM:
         case DEV_RM_2_HOME_PLUS:
         case DEV_RM_2_2HOME_PLUS_GDT:
@@ -836,32 +768,6 @@ public abstract class BLDevice implements Closeable {
             return DESC_RM_MINI;
         case BLDevice.DEV_RM_MINI_3:
             return DESC_RM_MINI_3;
-        case BLDevice.DEV_RM_MINI_4_1:
-            return DESC_RM_MINI_4_1;
-        case BLDevice.DEV_RM_MINI_4_2:
-            return DESC_RM_MINI_4_2;
-        case BLDevice.DEV_RM_MINI_4_3:
-            return DESC_RM_MINI_4_3;
-        case BLDevice.DEV_RM_MINI_4_4:
-            return DESC_RM_MINI_4_4;
-        case BLDevice.DEV_RM_MINI_4_5:
-            return DESC_RM_MINI_4_5;
-        case BLDevice.DEV_RM_MINI_4_6:
-            return DESC_RM_MINI_4_6;
-        case BLDevice.DEV_RM_MINI_7:
-            return DESC_RM_MINI_4_7;
-        case BLDevice.DEV_RM_MINI_4_8:
-            return DESC_RM_MINI_4_8;
-        case BLDevice.DEV_RM_MINI_4C_1:
-            return DESC_RM_MINI_4C_1;
-        case BLDevice.DEV_RM_MINI_4C_2:
-            return DESC_RM_MINI_4C_2;
-        case BLDevice.DEV_RM_MINI_4_3:
-            return DESC_RM_MINI_4C_3;
-        case BLDevice.DEV_RM_MINI_4C_4:
-            return DESC_RM_MINI_4C_4;
-        case BLDevice.DEV_RM_MINI_4C_5:
-            return DESC_RM_MINI_4C_5;                                                                                                                                                            
         case BLDevice.DEV_RM_PRO_PHICOMM:
             return DESC_RM_PRO_PHICOMM;
         case BLDevice.DEV_RM_2_HOME_PLUS:
