@@ -1,0 +1,184 @@
+/*******************************************************************************
+ * MIT License
+ *
+ * Copyright (c) 2016, 2017 Anthony Law
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ * Contributors:
+ *      - Anthony Law (mob41) - Initial API Implementation
+ *      - bwssytems
+ *      - Christian Fischer (computerlyrik)
+ *******************************************************************************/
+package com.github.mob41.blapi;
+
+import java.io.IOException;
+import java.net.DatagramPacket;
+
+import javax.xml.bind.DatatypeConverter;
+
+import com.github.mob41.blapi.mac.Mac;
+import com.github.mob41.blapi.pkt.cmd.rm4.CheckDataCmdPayload;
+import com.github.mob41.blapi.pkt.cmd.rm4.EnterLearnCmdPayload;
+import com.github.mob41.blapi.pkt.cmd.rm4.RMTempCmdPayload;
+
+/**
+ * Broadlink RM4 device client
+ * 
+ * @author Anthony
+ *
+ */
+public class RM4Device extends BLDevice {
+    
+    /**
+     * Generic way to create a RM4Device
+     * @param deviceType Device Type
+     * @param deviceDesc Friendly device description
+     * @param host The target Broadlink hostname
+     * @param mac The target Broadlink MAC address
+     * @throws IOException Problems on constructing socket
+     */
+	protected RM4Device(short deviceType, String deviceDesc, String host, Mac mac) throws IOException{
+        super(deviceType, deviceDesc, host, mac);
+    }
+
+    /**
+     * Creates a RM4Device client instance
+     * 
+     * @param host
+     *            The target Broadlink hostname
+     * @param mac
+     *            The target Broadlink MAC address
+     * @throws IOException
+     *             Problems on constructing socket
+     */
+    public RM4Device(String host, Mac mac) throws IOException {
+        super(BLDevice.DEV_RM_MINI_4_1, BLDevice.DEV_RM_MINI_4_2, BLDevice.DEV_RM_MINI_4_3 ,BLDevice.DEV_RM_MINI_4_4, BLDevice.DEV_RM_MINI_4_5, BLDevice.DEV_RM_MINI_4_6, BLDevice.DEV_RM_MINI_4_7, BLDevice.DEV_RM_MINI_4_8, BLDevice.DESC_RM_MINI_4C_1, BLDevice.DESC_RM_MINI_4C_2, BLDevice.DESC_RM_MINI_4C_3, BLDevice.DESC_RM_MINI_4C_4, BLDevice.DESC_RM_MINI_4C_5,host, mac);
+    }
+
+    /**
+     * Requests the RM4 to return the learned data<br>
+     * <br>
+     * The {@link #auth() auth()} method must be ran before these commands
+     * 
+     * @return Result whether the command is successfully sent.
+     * @throws IOException
+     *             Problems on sending packet
+     */
+    public byte[] checkData() throws Exception {
+        CheckDataCmdPayload cmdPayload = new CheckDataCmdPayload();
+        DatagramPacket packet = sendCmdPkt(10000, cmdPayload);
+        byte[] data = packet.getData();
+
+        int err = data[0x22] | (data[0x23] << 8);
+
+        log.debug("RM4 check data received encrypted bytes: " + DatatypeConverter.printHexBinary(data));
+
+
+        if (err == 0) {
+            byte[] encData = decryptFromDeviceMessage(data);
+
+            return subbytes(encData, 0x04, encData.length);
+        }
+
+        log.warn("RM4 check data received error: " + Integer.toHexString(err) + " / " + err);
+        return null;
+    }
+
+    /**
+     * Requests the RM4 to enter learning mode.<br>
+     * <br>
+     * The {@link #auth() auth()} method must be ran before these commands
+     * 
+     * @return Result whether the command is successfully sent.
+     * @throws IOException
+     *             Problems on sending packet
+     */
+    public boolean enterLearning() throws IOException {
+        EnterLearnCmdPayload cmdPayload = new EnterLearnCmdPayload();
+		DatagramPacket packet = sendCmdPkt(10000, cmdPayload);
+
+        byte[] data = packet.getData();
+        log.debug("RM4 enter learning received encrypted bytes: " + DatatypeConverter.printHexBinary(data));
+        int err = data[0x22] | (data[0x23] << 8);
+
+        if (err == 0) {
+        	return true;
+        }
+        
+        log.warn("RM4 enter learning received error: " + Integer.toHexString(err) + " / " + err);
+        return false;
+    }
+
+    /**
+     * Requests the RM4 to return the room temperature<br>
+     * <br>
+     * The {@link #auth() auth()} method must be ran before these commands
+     * 
+     * @return The room temperature in a floating number
+     * @throws IOException
+     *             Problems on sending packet
+     */F
+    public double getTemp() throws Exception {
+        DatagramPacket packet = sendCmdPkt(new RMTempHumCmdPayload());
+        byte[] data = packet.getData();
+
+        log.debug("RM4 get temp received encrypted bytes: " + DatatypeConverter.printHexBinary(data));
+        int err = data[0x22] | (data[0x23] << 8);
+
+        if (err == 0) {
+            byte[] pl = decryptFromDeviceMessage(data);
+            log.debug("RM4 get temp received bytes (decrypted): " + DatatypeConverter.printHexBinary(pl));
+
+            return (double) (pl[0x4] * 10 + pl[0x5]) / 100.0;
+        } else {
+            log.warn("RM4 get temp received error: " + Integer.toHexString(err) + " / " + err);
+        }
+
+        return -1;
+    }
+
+    /**
+     * Requests the RM4 to return the room Humidity<br>
+     * <br>
+     * The {@link #auth() auth()} method must be ran before these commands
+     * 
+     * @return The room temperature in a floating number
+     * @throws IOException
+     *             Problems on sending packet
+     */F
+    public double getHum() throws Exception {
+        DatagramPacket packet = sendCmdPkt(new RMTempHumCmdPayload());
+        byte[] data = packet.getData();
+
+        log.debug("RM4 get temp received encrypted bytes: " + DatatypeConverter.printHexBinary(data));
+        int err = data[0x22] | (data[0x23] << 8);
+
+        if (err == 0) {
+            byte[] pl = decryptFromDeviceMessage(data);
+            log.debug("RM4 get temp received bytes (decrypted): " + DatatypeConverter.printHexBinary(pl));
+
+            return (double) (pl[0x6] * 10 + pl[0x7]) / 100.0;
+        } else {
+            log.warn("RM4 get temp received error: " + Integer.toHexString(err) + " / " + err);
+        }
+
+        return -1;
+    }
+}
